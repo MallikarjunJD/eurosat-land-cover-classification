@@ -7,5 +7,4 @@ Pillow
 seaborn
 matplotlib
 huggingface_hub
-sklearn
 imagecodecs
