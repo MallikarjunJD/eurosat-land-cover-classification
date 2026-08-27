@@ -4,7 +4,5 @@ torchvision
 numpy
 tifffile
 Pillow
-seaborn
-matplotlib
 huggingface_hub
 imagecodecs
