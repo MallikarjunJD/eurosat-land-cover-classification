@@ -1,0 +1,11 @@
+streamlit
+torch
+torchvision
+numpy
+tifffile
+Pillow
+seaborn
+matplotlib
+huggingface_hub
+sklearn
+imagecodecs
