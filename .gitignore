@@ -1,3 +1,18 @@
-*.pth
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# ML model checkpoints
+checkpoints/
 *.pt
+*.pth
 *.ckpt
+
+# Streamlit
+.streamlit/secrets.toml
+
+# OS
+.DS_Store
+Thumbs.db
