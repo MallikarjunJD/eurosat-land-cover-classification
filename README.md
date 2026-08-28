@@ -1,8 +1,14 @@
 # EuroSAT Dual-Mode Land Cover Classifier
 
-Production-grade computer vision system for satellite land-cover classification, deployed as two independently trained models — RGB and 13-band Sentinel-2 multispectral — behind a single Gradio interface, built around a zero-distribution-shift preprocessing guarantee.
+Production-grade computer vision system for satellite land-cover classification, deployed as two independently trained models — RGB and 13-band Sentinel-2 multispectral — behind a single Streamlit application, built around a zero-distribution-shift preprocessing guarantee.
 
 ---
+
+## Live Demo
+
+**[🛰️ Try the Live Application](https://eurosat-land-cover-classification.streamlit.app/)**
+
+Upload an RGB satellite image or a genuine 13-band Sentinel-2 GeoTIFF and get a land-cover prediction across 10 EuroSAT classes with confidence scores.
 
 ## Problem Statement
 
@@ -76,7 +82,7 @@ The core guarantee of this project: **the exact same normalization constants are
 
 1. Per-channel mean and standard deviation are computed once, over the raw (unnormalized) training split, for both the RGB and multispectral pipelines.
 2. Those constants are frozen to a single file, `normalization_stats.json`, versioned alongside the model weights.
-3. Training transforms, evaluation transforms, and the Gradio app's inference-time preprocessing all read from that one file — none of them ever recompute statistics from a live batch or a single upload.
+3. Training transforms, evaluation transforms, and the streamlit app's inference-time preprocessing all read from that one file — none of them ever recompute statistics from a live batch or a single upload.
 4. Resize interpolation mode (bilinear) and target resolution (64×64) are likewise fixed constants shared across training and inference code paths, since interpolation choice alone can shift pixel statistics enough to matter.
 
 ```
@@ -89,7 +95,7 @@ normalization_stats.json
 
 Because both consumers read the same frozen artifact instead of each computing their own version of "how to normalize an image," there is no code path in this project where training-time and inference-time preprocessing can silently diverge.
 
-See `Notebook_guide.md` (Deep-Dive section) for the full mathematical argument for why this specific mechanism eliminates covariate shift between training and inference distributions.
+
 
 ## Results
 
@@ -98,7 +104,7 @@ See `Notebook_guide.md` (Deep-Dive section) for the full mathematical argument f
 | SE-ResEuroNet (RGB) | 3-channel RGB | 3 | 97.58% |
 | SE-ResEuroNet (Multispectral) | 13-band Sentinel-2 L1C | 13 | 97.90% |
 
-\* Target performance band, benchmarked against community EuroSAT reference notebooks; see `Notebook_guide.md` for the full training/evaluation run and exact final numbers on your trained checkpoints.
+
 
 ![Accuracy ](./src/accuracy.png)
 
@@ -110,18 +116,21 @@ See `Notebook_guide.md` (Deep-Dive section) for the full mathematical argument f
 ![13B_Confusion_matrix](src/13B_Confusion_matrix.png)
 
 
-## Model Availability 
+## 🤗 Model Availability
 
-The trained models are available on 
-🤗[[MallikarjunJadi]](https://huggingface.co/MallikarjunJadi/eurosat-land-cover-models)
+The trained RGB and 13-band multispectral checkpoints are hosted on the Hugging Face Hub:
+
+**[EuroSAT Land Cover Models — Hugging Face](https://huggingface.co/MallikarjunJadi/eurosat-land-cover-models)**
+
+The Streamlit application downloads the model checkpoints from Hugging Face at runtime, keeping large `.pt` files out of the GitHub repository.
 
 
 ## Repository Structure
 
 ```
 .
-├──  .gitignore.txt
-├──  app.py              
+├── .gitignore
+├── app.py              
 ├── CNNonEuroSat.ipynb           
 ├── model.py                                
 ├── normalization_stats.json    
@@ -143,29 +152,27 @@ The trained models are available on
 
 ## Getting Started
 
+### Run Locally
+
 ```bash
-# 1. Clone and install
 git clone https://github.com/MallikarjunJD/eurosat-land-cover-classification.git
 cd eurosat-land-cover-classification
+
 pip install -r requirements.txt
 
-# 2. Train (see Notebook_guide.md for the full, runnable code)
-#    Produces: rgb_model_best.pt, multispectral_model_best.pt,
-#              normalization_stats.json
-
-# 3. Launch the deployment app
-python app.py
-```
+streamlit run app.py
 
 ### `requirements.txt`
 
 ```
 torch>=2.1
 torchvision>=0.16
-gradio>=4.0
+streamlit
 tifffile>=2023.7.10
 numpy>=1.24
 Pillow>=10.0
+huggingface_hub
+imagecodecs
 ```
 
 ## Engineering Standards
