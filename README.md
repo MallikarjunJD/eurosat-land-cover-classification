@@ -165,6 +165,10 @@ streamlit run app.py
 ### `requirements.txt`
 
 ```
+
+## Rquirements
+
+```
 torch>=2.1
 torchvision>=0.16
 streamlit
